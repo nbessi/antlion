@@ -1,0 +1,19 @@
+waf:
+  build: "."
+  command: ['python', '/opt/antlion/antlion.py']
+  ports:
+   - "5000:5000"
+  links:
+   - dummy_service
+  volumes:
+   - ./config/:/etc/default/
+   - ./antlion:/opt/antlion/
+
+dummy_service:
+  build: "./test_service"
+  command: ['python', '/opt/dummyservice/antlion_dummy.py']
+  ports:
+    - "5500:5500"
+  volumes:
+    - ./config/:/etc/default/
+    - ./test_service/:/opt/dummyservice/
