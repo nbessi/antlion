@@ -9,17 +9,21 @@ RULE_LEVEL = 50
 
 rules_class_register = []
 
+
 def enable_rule_level():
 
     logging.addLevelName(RULE_LEVEL, "RULE")
+
     def rule(self, message, *args, **kws):
         # Yes, logger takes its '*args' as 'args'.
         if self.isEnabledFor(RULE_LEVEL):
             self._log(RULE_LEVEL, message, args, **kws)
     logging.Logger.rule = rule
 
+
 def load_rules():
     import_module('.rules', 'rules_lib')
+
 
 def register_class(cls):
     heappush(rules_class_register, cls)
@@ -58,7 +62,6 @@ class RuleMeta(type):
         return self.priority < other.priority
 
 
-
 class BaseRule(object, metaclass=RuleMeta):
 
     def __init__(self, config=None):
@@ -71,7 +74,6 @@ class BaseRule(object, metaclass=RuleMeta):
         raise NotImplementedError(
             'Check method for {} must be implemented'.format(name)
         )
-
 
     def __repr__(self):
         return """{}
@@ -86,11 +88,12 @@ priority: {}
     def __str__(self):
         return "{} -- priority: {}".format(self.section, self.priority)
 
+
 class RulesContext(object):
 
     def __init__(self, config, logger):
         self.rules_register = []
-        self.logger=logger
+        self.logger = logger
         for cls in rules_class_register:
             if cls.section in config:
                 rule_config = config[cls.section]
