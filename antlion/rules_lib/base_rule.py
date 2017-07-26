@@ -60,3 +60,8 @@ class BaseRule(object, metaclass=RuleMeta):
         raise NotImplemented(
             'Check method for {} must be implemented'.format(self)
         )
+
+    def __init__(self, config=None):
+        if config is None:
+            config = {}
+        self.config = config
