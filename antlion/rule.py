@@ -115,10 +115,9 @@ class RulesContext(object):
         except RuleException as exc:
             rhash = hash(request)
             self.logger.rule('%s --- %s ', rhash, repr(request))
-            self.logger.rule('%s --- Rule violation: %s --- %s',
+            self.logger.rule('%s --- %s',
                              rhash,
-                             rule.section,
-                             exc.description)
+                             repr(exc))
             raise
         except Exception as exc:
             self.logger.error(repr(exc))

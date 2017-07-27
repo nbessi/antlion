@@ -26,5 +26,6 @@ class ScannerDetection(BaseRule):
         for malicious_user_agent in KNOWN_USER_AGENTS:
             if malicious_user_agent.regexp.search(user_agent):
                 raise RuleException(
-                    'Scanner detected --- {}'.format(malicious_user_agent.desc)
+                    self,
+                    malicious_user_agent.desc
                 )
