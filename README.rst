@@ -65,6 +65,30 @@ to run antlion after editing some code:
 
     docker-compose run --rm -p5000:5000 waf
 
+
+To do a simple test
+
+.. code-block:: bash
+
+   curl -A "nessus" -D - http://localhost:5000
+   HTTP/1.1 400 BAD REQUEST
+   Server: gunicorn/19.7.1
+   Date: Thu, 27 Jul 2017 22:22:06 GMT
+   Connection: close
+   Content-Type: text/html
+   antlion-section: REQUEST-913-SCANNER-DETECTION
+   antlion-message: nessus vuln scanner
+   Content-Length: 135
+
+   <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+   <title>400 Bad Request</title>
+   <h1>Bad Request</h1>
+   <p>nessus vuln scanner</p>
+
+
+We can see in the headers in case of violation antlion headers where added
+and in the body the reasons
+
 Production
 ----------
 
