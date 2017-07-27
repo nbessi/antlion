@@ -1,13 +1,13 @@
 waf:
   build: "."
-  command: ['python', '/opt/antlion/antlion.py']
+  command: ['gunicorn', '-w6', '-b 0.0.0.0:5000', 'antlion.antlion:app' ]
   ports:
    - "5000:5000"
   links:
    - dummy_service
   volumes:
-   - ./config/:/root/
-   - ./antlion:/opt/antlion/
+   - ./config/antlion.ini:/root/antlion.ini
+   - .:/opt/antlion
 
 dummy_service:
   build: "./test_service"

@@ -68,8 +68,26 @@ to run antlion after editing some code:
 Production
 ----------
 
-Todo with first release
+Install Python3 (I'll recommend Python 3.6 and higher),
+`python-pip <https://pip.pypa.io/en/stable/installing/>`_ and optionally you can set up a Python virtualenv
 
+Clone the package in the destination of your choice:
+
+
+.. code-block:: bash
+
+    git clone https://github.com/nbessi/antlion.git
+    cd antlion
+    python3 setup.py install --user
+    # or globally
+    sudo python3 setup.py install
+
+Create a configuration file. Refer to the `Configuration` section.
+
+You can now bind the `antlion.antlion:app` to your prefered WSGI server.
+
+I recommend `Gunicorn <http://docs.gunicorn.org/en/stable/deploy.html>`_ with Gevent.
+As the application act as a proxy you want to avoid timeout.
 
 Configuration
 =============
@@ -78,11 +96,19 @@ Antlion setup is based on a `ConfigParser <https://docs.python.org/3/library/con
 
 You will find an complete configuration sample file under the `config folder <https://github.com/nbessi/antlion/tree/master/config>`_
 
+The configuration file must be name `antlion.ini` and must be
+located in one of the following location:
+
+* `~`
+* `etc/`
+
+or the path to the conif file can be set via an environment variable `ANTLION_CONFIG_PATH`
+
 Main Section
 ------------
 
 The `[antlion]` configuration section is mandatory.
-it must contains the proxy endpoint
+It musts contains the proxy endpoint
 
 .. code-block:: text
 

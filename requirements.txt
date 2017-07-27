@@ -1,0 +1,4 @@
+Werkzeug==0.12.2
+Flask==0.12.2
+requests==2.18.1
+gevent==1.2.2
