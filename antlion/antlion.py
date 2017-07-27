@@ -59,5 +59,6 @@ def root(path):
 
 if __name__ == "__main__":
     from gevent.wsgi import WSGIServer
-    http_server = WSGIServer(('', 5000), app)
+    from werkzeug.debug import DebuggedApplication
+    http_server = WSGIServer(('', 5000), DebuggedApplication(app))
     http_server.serve_forever()
