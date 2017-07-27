@@ -4,8 +4,8 @@ from logging.config import fileConfig
 from urllib.parse import urlparse
 from flask import Response, request, Flask
 import requests
-from rules_lib.rule import RulesContext, load_rules, enable_rule_level
-import config
+from .rule import RulesContext, load_rules, enable_rule_level
+from . import config
 
 enable_rule_level()
 load_rules()

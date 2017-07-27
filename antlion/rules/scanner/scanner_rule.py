@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from ...rule import BaseRule
-from ...errors import RuleException
+from antlion.rule import BaseRule
+from antlion.errors import RuleException
 from .data import KNOWN_USER_AGENTS
 
 

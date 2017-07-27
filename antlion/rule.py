@@ -22,7 +22,7 @@ def enable_rule_level():
 
 
 def load_rules():
-    import_module('.rules', 'rules_lib')
+    import_module('.rules', 'antlion')
 
 
 def register_class(cls):
