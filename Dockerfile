@@ -7,5 +7,6 @@ RUN mkdir /opt/antlion
 COPY . /opt/antlion
 WORKDIR /opt/antlion
 RUN python setup.py develop
+RUN pip install -r test-requirements.txt
 EXPOSE 5000
 CMD ['gunicorn', '-w6', '-b 0.0.0.0:5000', 'antlion.antlion:app' ]

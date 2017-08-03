@@ -6,7 +6,7 @@ from antlion.rule import BaseRule
 from antlion.errors import RuleException
 from werkzeug.wrappers import Request
 
-class TestRule(BaseRule):
+class DummyRule(BaseRule):
 
     section = 'ANTLION-TEST'
 
@@ -29,18 +29,21 @@ class CoreTest(AntlionTestCase):
 
     def setUp(self):
         super().setUp()
-        self.env = self.create_env(
+        self.env = self.create_environ(
             method='POST',
             data={'dummy': 'test'}
         )
         self.w_request = Request(self.env)
+        self.register_rule(DummyRule)
 
     def test_context_init(self):
+        """Test rule context initalisation"""
         rules_context = RulesContext(self.config, logging.getLogger())
         self.assertEqual(len(rules_context.rules_register), 1)
-        self.assertIsInstance(rules_context.rules_register[0], TestRule)
+        self.assertIsInstance(rules_context.rules_register[0], DummyRule)
 
     def test_context_check(self):
+        """Test evaluation of test rules"""
         rules_context = RulesContext(self.config, logging.getLogger())
         self.assertTrue(hasattr(rules_context.rules_register[0],
                                 'should_raise'))
