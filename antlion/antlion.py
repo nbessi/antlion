@@ -8,13 +8,14 @@ from .rule import RulesContext, load_rules, enable_rule_level
 from . import config
 
 enable_rule_level()
-load_rules()
 
 app = Flask('antlion')
 app.logger_name = 'antlion_default'
 with app.app_context():
     antlion_config = config.get_config()
     app.config.update(antlion_config)
+    # will be removed when rules will be separated in own package
+    load_rules(antlion_config['antlion'])
     app.config.update(antlion_config['antlion'])
     log = None
     if 'flask' in antlion_config:
