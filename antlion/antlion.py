@@ -31,14 +31,14 @@ with app.app_context():
         app.logger.addHandler(logging.StreamHandler())
         app.logger.setLevel(logging.INFO)
 
-rule_context = RulesContext(antlion_config, log or app.logger)
+rules_context = RulesContext(antlion_config, log or app.logger)
 ENDPOINT = urlparse(app.config['endpoint'])
 
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def root(path):
-    with rule_context.check(request):
+    with rules_context.check(request):
         url = urlparse(request.url)
         target_url = url._replace(netloc=ENDPOINT.netloc,
                                   scheme=ENDPOINT.scheme)
@@ -53,7 +53,7 @@ def root(path):
 
         return Response(
                 response.raw,  # direct file interface
-                headers=response.raw.headers.items(),
+                headers=response.headers.items(),
                 status=response.status_code,
                 direct_passthrough=True)
 

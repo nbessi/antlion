@@ -1,17 +1,11 @@
 # -*- coding: utf-8 -*-
+import logging
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 import configparser
-from antlion.antlion import app
-from antlion import rule
+
 from httmock import all_requests
 from werkzeug.test import EnvironBuilder
-
-
-@all_requests
-def response_content(url, request):
-        return {'status_code': 200,
-                'content': 'Antlion OK'}
 
 
 def get_test_config():
@@ -23,11 +17,25 @@ def get_test_config():
     return config
 
 
+with patch('antlion.config.get_config', side_effect=get_test_config):
+        from antlion.antlion import app
+        from antlion import rule
+
+
+@all_requests
+def fake_reponse_content(url, request):
+        return {'status_code': 200,
+                'content': 'Antlion OK',
+                'headers': {},
+                'raw': MagicMock()}
+
+
 class AntlionTestCase(unittest.TestCase):
 
     def setUp(self):
         app.testing = True
         self.config = get_test_config()
+        self.logger = logging.getLogger()
         rule.rules_class_register = []
 
     def create_environ(self, **kwargs):
