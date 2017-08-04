@@ -8,13 +8,14 @@ from .rule import RulesContext, load_rules, enable_rule_level
 from . import config
 
 enable_rule_level()
-load_rules()
 
 app = Flask('antlion')
 app.logger_name = 'antlion_default'
 with app.app_context():
     antlion_config = config.get_config()
     app.config.update(antlion_config)
+    # will be removed when rules will be separated in own package
+    load_rules(antlion_config['antlion'])
     app.config.update(antlion_config['antlion'])
     log = None
     if 'flask' in antlion_config:
@@ -30,14 +31,14 @@ with app.app_context():
         app.logger.addHandler(logging.StreamHandler())
         app.logger.setLevel(logging.INFO)
 
-rule_context = RulesContext(antlion_config, log or app.logger)
+rules_context = RulesContext(antlion_config, log or app.logger)
 ENDPOINT = urlparse(app.config['endpoint'])
 
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def root(path):
-    with rule_context.check(request):
+    with rules_context.check(request):
         url = urlparse(request.url)
         target_url = url._replace(netloc=ENDPOINT.netloc,
                                   scheme=ENDPOINT.scheme)
@@ -52,7 +53,7 @@ def root(path):
 
         return Response(
                 response.raw,  # direct file interface
-                headers=response.raw.headers.items(),
+                headers=response.headers.items(),
                 status=response.status_code,
                 direct_passthrough=True)
 

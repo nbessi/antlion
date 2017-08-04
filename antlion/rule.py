@@ -21,12 +21,14 @@ def enable_rule_level():
     logging.Logger.rule = rule
 
 
-def load_rules():
-    import_module('.rules', 'antlion')
+def load_rules(config):
+    if not config.getboolean('no_core_rules'):
+        import_module('.rules', 'antlion')
 
 
 def register_class(cls):
-    heappush(rules_class_register, cls)
+    if not cls in rules_class_register:
+        heappush(rules_class_register, cls)
 
 
 class RuleMeta(type):

@@ -15,7 +15,7 @@ class ScannerDetection(BaseRule):
 
     def __init__(self, config=None):
         super().__init__(config=config)
-        self.block_empty_agent = config.getboolean('block_empty_agent')
+        self.block_empty_agent = self.config.getboolean('block_empty_agent')
 
     def check(self, request, logger=None):
         user_agent = request.headers.get('User-Agent')
