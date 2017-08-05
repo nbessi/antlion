@@ -12,7 +12,6 @@ class ScannerDetection(BaseRule):
     configuration"""
     priority = 5
 
-
     def __init__(self, config=None):
         super().__init__(config=config)
         self.block_empty_agent = self.config.getboolean('block_empty_agent')
