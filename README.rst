@@ -1,8 +1,11 @@
 ANTLION: A Python WSGI Web Application Firewall
 ###############################################
-[![Build Status](https://travis-ci.org/nbessi/antlion.svg?branch=master)](https://travis-ci.org/nbessi/antlion)
 
-[![codecov](https://codecov.io/gh/nbessi/antlion/branch/master/graph/badge.svg)](https://codecov.io/gh/nbessi/antlion)
+.. image:: https://travis-ci.org/nbessi/antlion.svg?branch=master
+   :target: https://travis-ci.org/nbessi/antlion
+
+.. image:: https://codecov.io/gh/nbessi/antlion/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/nbessi/antlion
 
 Antlion is a modular Web Application FireWall written in Python.
 It is based on Flask and is compatible with your favorite WSGI server.
