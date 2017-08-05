@@ -40,7 +40,7 @@ class AntlionTestCase(unittest.TestCase):
 
     def create_environ(self, **kwargs):
         env_builder = EnvironBuilder(
-            **kwargs,
+            **kwargs
         )
         return env_builder.get_environ()
 
