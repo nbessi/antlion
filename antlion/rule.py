@@ -27,7 +27,7 @@ def load_rules(config):
 
 
 def register_class(cls):
-    if not cls in rules_class_register:
+    if cls not in rules_class_register:
         heappush(rules_class_register, cls)
 
 
