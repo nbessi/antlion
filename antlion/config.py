@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
 from os.path import expanduser
 from pathlib import Path
 import configparser
@@ -44,6 +45,9 @@ def get_config():
         )
 
     config = configparser.ConfigParser()
-    config.read(config_path)
+    if sys.version_info.minor < 6:
+        config.read(str(config_path.absolute()))
+    else:
+        config.read(config_path)
     validate_config(config)
     return config
