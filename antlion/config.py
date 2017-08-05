@@ -5,17 +5,27 @@ from pathlib import Path
 import configparser
 
 
+config_file_candidates = [
+        Path('/etc', 'antlion.ini'),
+        Path(expanduser("~"), 'antlion.ini'),
+]
+
+
 class ConfigurationError(Exception):
     def __init__(self, message):
         super(Exception, self).__init__(message)
 
 
+def validate_config(config):
+    if 'antlion' not in config:
+        raise ConfigurationError("Section [antlion] is not in config file")
+    if not config.has_option('antlion', 'endpoint'):
+        raise ConfigurationError(
+            "'endpoint' option is mandatory in antlion section"
+        )
+
+
 def get_config():
-    home = expanduser("~")
-    config_file_candidates = [
-        Path('/etc', 'antlion.ini'),
-        Path(home, 'antlion.ini'),
-    ]
 
     env_path = os.environ.get('ANTLION_CONFIG_PATH')
     if env_path:
@@ -35,10 +45,5 @@ def get_config():
 
     config = configparser.ConfigParser()
     config.read(config_path)
-    if 'antlion' not in config:
-        raise ConfigurationError("Section [antlion] is not in config file")
-    if not config.has_option('antlion', 'endpoint'):
-        raise ConfigurationError(
-            "'endpoint' option is mandatory in antlion section"
-        )
+    validate_config(config)
     return config
