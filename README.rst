@@ -8,9 +8,9 @@ ANTLION: A Python WSGI Web Application Firewall
    :target: https://codecov.io/gh/nbessi/antlion
 
 Antlion is a modular Web Application FireWall written in Python.
-It is based on Flask and is compatible with your favorite WSGI server.
+It is based on Flask and is compatible with your favourite WSGI server.
 
-Antlion is currently under heavy developpement and his API is subject to change.
+Antlion is currently under heavy  development and his API is subject to change.
 
 Why
 ===
@@ -18,12 +18,12 @@ Why
 Antlion was created because existing FOSS WAF are quite difficult to apprehend setup and extend.
 The main objectives are:
 
-* Provide an accessible set of core rules based on owasp core rules.
-* Provide a simple developpement framework to create dedicated rules set
+* Provide an accessible set of core rules based on OWASP core rules.
+* Provide a simple development framework to create dedicated rules set
 * Allow flexible configuration based on standard python technology
 * Be `SMART <https://en.wikipedia.org/wiki/SMART_criteria>`_
 * Be scalable
-* Allows fast protoyping
+* Allows fast prototyping
 
 Setup
 =====
@@ -31,10 +31,10 @@ Setup
 Development
 -----------
 
-Antlion provide a Docker development that contains:
+Antlion provides a Docker development that contains:
 
 * An antlion service configured to run with gunicorn
-* A simple dummy flask service that return the request recieved
+* A simple dummy flask service that return the request received
 
 First install `Docker <https://docs.docker.com/engine/installation/>`_ with `Docker Compose <https://docs.docker.com/compose/install/>`_
 
@@ -47,7 +47,7 @@ Then run following commands:
     docker-compose build --pull
     docker-compose up
 
-if everything is OK you should see the following output:
+if everything is OK, you should see the following output:
 
  .. code-block:: bash
 
@@ -63,7 +63,7 @@ if everything is OK you should see the following output:
     dummy_service_1  |  * Debugger is active!
 
 
-press CTRL-C to stop the application.
+Press CTRL-C to stop the application.
 
 to run antlion after editing some code:
 
@@ -92,7 +92,7 @@ To do a simple test
    <p>nessus vuln scanner</p>
 
 
-We can see in the headers in case of violation antlion headers where added
+We can see in the headers in case of violation antlion headers were added
 and in the body the reasons
 
 Production
@@ -114,7 +114,7 @@ Clone the package in the destination of your choice:
 
 Create a configuration file. Refer to the `Configuration` section.
 
-You can now bind the `antlion.antlion:app` to your prefered WSGI server.
+You can now bind the `antlion.antlion:app` to your preferred WSGI server.
 
 I recommend `Gunicorn <http://docs.gunicorn.org/en/stable/deploy.html>`_ with Gevent.
 As the application act as a proxy you want to avoid timeout.
@@ -124,21 +124,21 @@ Configuration
 
 Antlion setup is based on a `ConfigParser <https://docs.python.org/3/library/configparser.html#ConfigParser.SafeConfigParser>`_ configuration files.
 
-You will find an complete configuration sample file under the `config folder <https://github.com/nbessi/antlion/tree/master/config>`_
+You will find a complete configuration sample file under the `config folder <https://github.com/nbessi/antlion/tree/master/config>`_
 
-The configuration file must be name `antlion.ini` and must be
-located in one of the following location:
+The configuration file must be named `antlion.ini` and must be
+located in one of the following locations:
 
 * `~`
 * `etc/`
 
-or the path to the conif file can be set via an environment variable `ANTLION_CONFIG_PATH`
+or the path to the configuration file can be set via an environment variable `ANTLION_CONFIG_PATH`
 
 Main Section
 ------------
 
 The `[antlion]` configuration section is mandatory.
-It musts contains the proxy endpoint
+It musts contain the proxy endpoint
 
 .. code-block:: text
 
@@ -148,8 +148,8 @@ It musts contains the proxy endpoint
 Rules Setup
 -----------
 
-Each rules can be provided with it own configuration.
-To do this the section name of the configfile must match the section property of the rule class:
+Each rule can be provided with it own configuration.
+To do this the section name of the configuration file must match the section property of the rule class:
 
 .. code-block:: python
 
@@ -173,21 +173,155 @@ disable the loading and evaluation of a rule.
 Logging
 -------
 
-In a WAF logging is important that why Antlion tries to provides the most flexible approach
+In a WAF logging is important that why Antlion tries to provide the most flexible approach
 to logging.
 
 If nothing is set in config file Antlion will use the default Flask logger to level INFO.
 If you provide `FileConfig` required section you will be able to freely setup your
 logging policy (stream, file, rotating file, mail, etc) please see `related documentation <https://docs.python.org/3/library/logging.config.html#logging-config-fileformat>`_
 
-Antlion also provides a `RULE` log level associatied with a `Logger.rule` function
+Antlion also provides a `RULE` log level associated with a `Logger.rule` function
 
 
-Developping a rule
+Developing a rule
 ==================
 
-Todo
+Developing a rule is a straight forward process.
+Simply create a module and create a class that derived from `antlion.rule.BaseRule`
+A rule is automatically registered when the sub class of `antlion.rule.BaseRule` is instantiated
 
+
+.. code-block:: python
+
+    # -*- coding: utf-8 -*-
+    from antlion.rule import BaseRule
+    from antlion.errors import RuleException
+
+    class ScannerDetection(BaseRule):
+
+
+        section = 'REQUEST-913-SCANNER-DETECTION' # OWASP section and code
+
+        description = """These rule will try to block scanner based on knowledge configuration"""
+
+        priority = 5
+
+
+        def __init__(self, config=None):
+            super().__init__(config=config)
+            self.block_empty_agent = self.config.getboolean('block_empty_agent')
+
+        def check(self, request, logger=None):
+            user_agent = request.headers.get('User-Agent')
+            if not user_agent:
+                if self.block_empty_agent:
+                    raise RuleException(self, 'Empty user agent')
+                return
+            for malicious_user_agent in KNOWN_USER_AGENTS:
+                if malicious_user_agent.regexp.search(user_agent):
+                    raise RuleException(
+                        self,
+                        malicious_user_agent.desc
+                    )
+
+
+The class has mandatory properties:
+
+ * `section`: a string describing the rule it should be composed like `DOMAIN_OWASPCODE_DESCRIPTION`
+ * `description`: a string describing the rule behavior
+ * `priority`: (set by default to 0) it will determine the priority of the rule. A small values means higher priority
+
+A rule also receives in his constructor his corresponding configparser section and a logger.
+They can be accessed via `self.config` and `self.logger`
+
+
+When an antlion security context manager is called it will iterate over all rules.
+When processing a rule the security context manager will call the rule `check` method and pass the current `werkzeug request <http://werkzeug.pocoo.org/docs/0.12/wrappers/>`_ and the context logger.
+
+The check function must return an `antlion.errors.RuleException` in case of rule violation.
+
+The Exception needs to receive the rule and a message as parameters.
+When such an error is raised it will alter response header and set response code to 400 bad request.
+
+Testing your rule
+-----------------
+
+Antlion provide facilities to test your rule. In a test folder create a module starting with `test_` or matching your test tools pattern.
+The `AntlionTestCase` base class provide:
+
+ * A helper to create Werkzeug `EnvironBuilder` `create_environ`
+ * A test config and a test logger `self.config`, `self.logger`
+
+and some less common helpers used to test the antlion core:
+
+ * A helper to get a flask test client with patched config `get_antlion_client`
+ * A helper to mock `requests` proxy response `fake_reponse_content`
+
+When the test class setup herself it will empty the rule class register allowing you to test only the current rules.
+
+
+.. code-block:: python
+
+    # -*- coding: utf-8 -*-
+    from werkzeug.wrappers import Request
+    from antlion.test import AntlionTestCase
+    from antlion.rule import RulesContext
+    from antlion.rules.scanner.scanner_header_rule import ScannerDetection
+    from antlion.errors import RuleException
+
+
+    class ScannerHeaderTest(AntlionTestCase):
+        """Test black list detection of scanner user agent"""
+
+        def setUp(self):
+            super().setUp()
+            self.env = self.create_environ(
+                method='POST',
+                data={'dummy': 'test'},
+                headers={'User-Agent': 'Mozilla'},
+            )
+            self.register_rule(ScannerDetection)
+
+        def test_valid_request(self):
+            """Test a valid request"""
+            request = Request(self.env)
+
+            rules_context = RulesContext(self.config, self.logger)
+            try:
+                with rules_context.check(request):
+                    print('Test scanner header detection')
+            except RuleException:
+                self.fail('False positive for scanner header')
+
+        def test_invalid_request(self):
+            """Test detection of scanner header"""
+            self.env['HTTP_USER_AGENT'] = 'nessus'
+            request = Request(self.env)
+
+            rules_context = RulesContext(self.config, self.logger)
+
+            with self.assertRaises(RuleException,
+                                   msg='False negative for scanner header'):
+                with rules_context.check(request):
+                    print('Test scanner header detection')
+
+
+Extending core rules
+--------------------
+
+If you want to extend core rules, you must add a package in `antlion.rules <https://github.com/nbessi/antlion/tree/master/antlion/rules>`_ and load your package in the `__init__.py`.
+You must also add test cases in the test folder. The directory structure must reflect the rules package.
+
+Packaging your own rule
+-----------------------
+
+You can create your own rules eggs.
+The only prerequisite are:
+
+ * Depending on antlion
+ * Loading/importing your rule class in order to have them registered
+
+I recommend following `Kenneth Reitz recommendations <https://www.kennethreitz.org/essays/repository-structure-and-python>`_
 
 Roadmap
 =======
@@ -195,7 +329,7 @@ Roadmap
 short term
 ----------
 
-* Finalize first version of API
+* Finalise first version of API
 * Provide a decent set of core rules
 * Setup test logic and API
 * Do the first release (package, doc, etc)
@@ -204,9 +338,9 @@ short term
 Middle term
 -----------
 
-* Provide data persitency
+* Provide data persistency
 * Provide advance rules
-* Organize rules in wheels
+* Organise rules in wheels
 
 Long term
 ---------
