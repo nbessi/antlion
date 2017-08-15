@@ -20,7 +20,7 @@ class ScannerDetection(BaseRule):
         user_agent = request.headers.get('User-Agent')
         if not user_agent:
             if self.block_empty_agent:
-                raise RuleException('Empty user agent')
+                raise RuleException(self, 'Empty user agent')
             return
         for malicious_user_agent in KNOWN_USER_AGENTS:
             if malicious_user_agent.regexp.search(user_agent):
